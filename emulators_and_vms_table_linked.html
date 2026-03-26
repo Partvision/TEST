@@ -1,0 +1,219 @@
+
+<style>
+  * { box-sizing: border-box; }
+  .wrap { padding: 1rem 0; font-family: var(--font-sans); }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1.25rem; align-items: center; }
+  input[type="search"] { flex: 1; min-width: 180px; }
+  select { min-width: 140px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+  .badge-console   { background:#EEEDFE; color:#3C3489; }
+  .badge-arcade    { background:#FAECE7; color:#712B13; }
+  .badge-computer  { background:#E1F5EE; color:#085041; }
+  .badge-vm        { background:#E6F1FB; color:#0C447C; }
+  .badge-handheld  { background:#FBEAF0; color:#72243E; }
+  .badge-multi     { background:#FAEEDA; color:#633806; }
+  .badge-other     { background:#F1EFE8; color:#444441; }
+  @media (prefers-color-scheme: dark) {
+    .badge-console   { background:#26215C; color:#CECBF6; }
+    .badge-arcade    { background:#4A1B0C; color:#F5C4B3; }
+    .badge-computer  { background:#04342C; color:#9FE1CB; }
+    .badge-vm        { background:#042C53; color:#B5D4F4; }
+    .badge-handheld  { background:#4B1528; color:#F4C0D1; }
+    .badge-multi     { background:#412402; color:#FAC775; }
+    .badge-other     { background:#2C2C2A; color:#D3D1C7; }
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 9px 12px; font-weight: 500; font-size: 12px; color: var(--color-text-secondary); border-bottom: 1px solid var(--color-border-tertiary); white-space: nowrap; cursor: pointer; user-select: none; }
+  th:hover { color: var(--color-text-primary); }
+  td { padding: 8px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--color-background-secondary); }
+  .name a { font-weight: 500; color: var(--color-text-info); text-decoration: none; }
+  .name a:hover { text-decoration: underline; }
+  .oss  { color: var(--color-text-success); font-size: 11px; }
+  .prop { color: var(--color-text-danger); font-size: 11px; }
+  .free { color: var(--color-text-secondary); font-size: 11px; }
+  .count { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px; }
+  .platforms { display: flex; flex-wrap: wrap; gap: 4px; }
+</style>
+
+<div class="wrap">
+  <div class="controls">
+    <input type="search" id="search" placeholder="Search emulators..." oninput="render()">
+    <select id="catFilter" onchange="render()">
+      <option value="">All categories</option>
+      <option value="Console">Console</option>
+      <option value="Handheld">Handheld</option>
+      <option value="Arcade">Arcade</option>
+      <option value="Computer">Computer</option>
+      <option value="VM">Virtual Machine</option>
+      <option value="Multi">Multi-system</option>
+      <option value="Other">Other</option>
+    </select>
+    <select id="licFilter" onchange="render()">
+      <option value="">All licenses</option>
+      <option value="Open Source">Open Source</option>
+      <option value="Proprietary">Proprietary</option>
+      <option value="Free">Free / Freeware</option>
+    </select>
+  </div>
+  <div class="count" id="count"></div>
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sort('name')">Name <span id="arr-name">↕</span></th>
+        <th onclick="sort('cat')">Category <span id="arr-cat">↕</span></th>
+        <th>Emulates</th>
+        <th>Host Platforms</th>
+        <th onclick="sort('license')">License <span id="arr-license">↕</span></th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<script>
+const data = [
+  { name:"RPCS3",             url:"https://rpcs3.net",                               cat:"Console",  emulates:"Sony PlayStation 3",                   platforms:["Windows","Linux"],                  license:"Open Source", notes:"Active development, many games playable" },
+  { name:"PCSX2",             url:"https://pcsx2.net",                               cat:"Console",  emulates:"Sony PlayStation 2",                   platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Mature, wide compatibility" },
+  { name:"DuckStation",       url:"https://www.duckstation.org",                     cat:"Console",  emulates:"Sony PlayStation 1",                   platforms:["Windows","Linux","macOS","Android"],license:"Open Source", notes:"Fast, accurate, replaces ePSXe" },
+  { name:"PPSSPP",            url:"https://www.ppsspp.org",                          cat:"Handheld", emulates:"Sony PSP",                             platforms:["Windows","Linux","macOS","Android","iOS"], license:"Open Source", notes:"Excellent compatibility, runs on phones" },
+  { name:"Vita3K",            url:"https://vita3k.org",                              cat:"Handheld", emulates:"Sony PS Vita",                         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Early stage, improving rapidly" },
+  { name:"Ryujinx",           url:"https://github.com/Ryujinx/Ryujinx",             cat:"Console",  emulates:"Nintendo Switch",                      platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Ceased development 2024, archived" },
+  { name:"yuzu",              url:"https://github.com/yuzu-emu/yuzu",               cat:"Console",  emulates:"Nintendo Switch",                      platforms:["Windows","Linux"],                  license:"Open Source", notes:"Shut down Mar 2024 via legal action" },
+  { name:"Sudachi",           url:"https://github.com/sudachi-emu/sudachi",         cat:"Console",  emulates:"Nintendo Switch",                      platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Yuzu fork post-shutdown" },
+  { name:"Citron",            url:"https://git.citron-emu.org/Citron/Citron",       cat:"Console",  emulates:"Nintendo Switch",                      platforms:["Windows","Linux"],                  license:"Open Source", notes:"Active yuzu fork" },
+  { name:"Strato",            url:"https://github.com/strato-emu/strato",           cat:"Console",  emulates:"Nintendo Switch",                      platforms:["Android"],                          license:"Open Source", notes:"Switch emu for Android" },
+  { name:"Citra",             url:"https://github.com/citra-emu/citra",             cat:"Handheld", emulates:"Nintendo 3DS",                         platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Shut down 2024, forks remain active" },
+  { name:"Lime3DS",           url:"https://github.com/Lime3DS/Lime3DS",             cat:"Handheld", emulates:"Nintendo 3DS",                         platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Citra fork post-shutdown" },
+  { name:"Panda3DS",          url:"https://panda3ds.com",                           cat:"Handheld", emulates:"Nintendo 3DS",                         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Newer 3DS emulator" },
+  { name:"melonDS",           url:"https://melonds.kuribo64.net",                   cat:"Handheld", emulates:"Nintendo DS / DSi",                    platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"High accuracy, Wi-Fi support" },
+  { name:"DeSmuME",           url:"https://desmume.org",                            cat:"Handheld", emulates:"Nintendo DS",                          platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Older but widely used" },
+  { name:"NooDS",             url:"https://github.com/Hydr8gon/NooDS",             cat:"Handheld", emulates:"Nintendo DS",                          platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Newer open source DS emu" },
+  { name:"mGBA",              url:"https://mgba.io",                                cat:"Handheld", emulates:"Game Boy / GBC / GBA",                 platforms:["Windows","Linux","macOS","Switch"],  license:"Open Source", notes:"Best GBA emulator available" },
+  { name:"SameBoy",           url:"https://sameboy.github.io",                      cat:"Handheld", emulates:"Game Boy / Game Boy Color",            platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Very accurate, pretty UI" },
+  { name:"Gambatte",          url:"https://github.com/sinamas/gambatte",            cat:"Handheld", emulates:"Game Boy / Game Boy Color",            platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Cycle-accurate, used in TASing" },
+  { name:"BGB",               url:"https://bgb.bircd.org",                          cat:"Handheld", emulates:"Game Boy / GBC",                       platforms:["Windows"],                          license:"Free",        notes:"Excellent debugger" },
+  { name:"Dolphin",           url:"https://dolphin-emu.org",                        cat:"Console",  emulates:"Nintendo GameCube / Wii",              platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Mature, great Wii motion support" },
+  { name:"Cemu",              url:"https://cemu.info",                              cat:"Console",  emulates:"Nintendo Wii U",                       platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Near-perfect BotW compatibility" },
+  { name:"ares",              url:"https://ares-emu.net",                           cat:"Multi",    emulates:"SNES, N64, PS1, Saturn, GBA, more",    platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"byuu's successor to higan" },
+  { name:"bsnes",             url:"https://github.com/bsnes-emu/bsnes",            cat:"Console",  emulates:"Super Nintendo (SNES)",                platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Cycle-accurate SNES emulation" },
+  { name:"Snes9x",            url:"https://www.snes9x.com",                         cat:"Console",  emulates:"Super Nintendo (SNES)",                platforms:["Windows","Linux","macOS","Android"], license:"Free",        notes:"Lightweight, wide compat" },
+  { name:"Nestopia UE",       url:"https://github.com/0ldsk00l/nestopia",           cat:"Console",  emulates:"Nintendo Entertainment System",        platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Very accurate NES emulator" },
+  { name:"FCEUX",             url:"https://fceux.com",                              cat:"Console",  emulates:"NES / Famicom",                        platforms:["Windows","Linux"],                  license:"Open Source", notes:"Popular for TASing & ROM hacking" },
+  { name:"Mesen",             url:"https://www.mesen.ca",                           cat:"Multi",    emulates:"NES, SNES, GB, GBA, PC Engine",        platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Extremely accurate, great debugger" },
+  { name:"Mupen64Plus",       url:"https://mupen64plus.org",                        cat:"Console",  emulates:"Nintendo 64",                          platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Core used by many frontends" },
+  { name:"Simple64",          url:"https://simple64.github.io",                     cat:"Console",  emulates:"Nintendo 64",                          platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Mupen64Plus-Next based, easy setup" },
+  { name:"Project64",         url:"https://www.pj64-emu.com",                       cat:"Console",  emulates:"Nintendo 64",                          platforms:["Windows"],                          license:"Free",        notes:"Long-standing Windows N64 emu" },
+  { name:"CEN64",             url:"https://github.com/n64dev/cen64",               cat:"Console",  emulates:"Nintendo 64 (cycle accurate)",         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Very accurate, very slow" },
+  { name:"RetroArch",         url:"https://www.retroarch.com",                      cat:"Multi",    emulates:"Hundreds of systems via cores",        platforms:["Windows","Linux","macOS","Android","iOS","Switch","PS3"], license:"Open Source", notes:"Frontend for libretro cores" },
+  { name:"OpenEmu",           url:"https://openemu.org",                            cat:"Multi",    emulates:"Dozens of systems via cores",          platforms:["macOS"],                            license:"Open Source", notes:"Beautiful macOS-native frontend" },
+  { name:"MAME",              url:"https://www.mamedev.org",                        cat:"Arcade",   emulates:"Thousands of arcade boards",           platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Most comprehensive arcade emu" },
+  { name:"FinalBurn Neo",     url:"https://github.com/finalburnneo/FBNeo",          cat:"Arcade",   emulates:"CPS1/2/3, Neo Geo, Taito, more",       platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Focused on playability vs MAME" },
+  { name:"Flycast",           url:"https://github.com/flyinghead/flycast",          cat:"Console",  emulates:"Sega Dreamcast / NAOMI",               platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Active, great Dreamcast emu" },
+  { name:"Redream",           url:"https://redream.io",                             cat:"Console",  emulates:"Sega Dreamcast",                       platforms:["Windows","Linux","macOS","Android"], license:"Free",        notes:"Paid premium tier for HD" },
+  { name:"Kronos",            url:"https://github.com/FCare/Kronos",               cat:"Console",  emulates:"Sega Saturn",                          platforms:["Windows","Linux"],                  license:"Open Source", notes:"Fork of Yabause with fixes" },
+  { name:"Genesis Plus GX",  url:"https://github.com/ekeeke/Genesis-Plus-GX",     cat:"Console",  emulates:"Sega Genesis / Mega Drive / CD / 32X", platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Widely used as libretro core" },
+  { name:"BlastEm",           url:"https://www.retrodev.com/blastem",              cat:"Console",  emulates:"Sega Genesis / Mega Drive",            platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Cycle-accurate, debugger support" },
+  { name:"Kega Fusion",       url:"https://www.carpeludum.com/kega-fusion",        cat:"Console",  emulates:"Sega SG-1000, SMS, Genesis, CD, 32X",  platforms:["Windows","Linux","macOS"],          license:"Free",        notes:"Covers wide Sega range" },
+  { name:"Cxbx-Reloaded",     url:"https://cxbx-reloaded.co.uk",                  cat:"Console",  emulates:"Microsoft Xbox (original)",            platforms:["Windows"],                          license:"Open Source", notes:"Actively developed" },
+  { name:"xenia",             url:"https://xenia.jp",                              cat:"Console",  emulates:"Microsoft Xbox 360",                   platforms:["Windows"],                          license:"Open Source", notes:"Many titles boot/playable" },
+  { name:"xemu",              url:"https://xemu.app",                              cat:"Console",  emulates:"Microsoft Xbox (original)",            platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Based on QEMU, fast progress" },
+  { name:"Mednafen",          url:"https://mednafen.github.io",                    cat:"Multi",    emulates:"NES, SNES, PS1, PCE, GB, GBA, more",  platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"CLI-based, highly accurate" },
+  { name:"ScummVM",           url:"https://www.scummvm.org",                       cat:"Other",    emulates:"Point-and-click adventure engines",    platforms:["Windows","Linux","macOS","Android","iOS","Switch"], license:"Open Source", notes:"LucasArts, Sierra, Humongous, more" },
+  { name:"Ruffle",            url:"https://ruffle.rs",                             cat:"Other",    emulates:"Adobe Flash Player",                   platforms:["Web","Windows","Linux","macOS"],    license:"Open Source", notes:"Flash preservation project" },
+  { name:"DOSBox",            url:"https://www.dosbox.com",                        cat:"Computer", emulates:"IBM PC / DOS environment",             platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Classic DOS gaming standard" },
+  { name:"DOSBox-X",          url:"https://dosbox-x.com",                          cat:"Computer", emulates:"IBM PC / DOS / PCjr / Tandy",          platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Extended DOSBox with more hardware" },
+  { name:"DOSBox Staging",    url:"https://dosbox-staging.github.io",             cat:"Computer", emulates:"IBM PC / DOS",                         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Modern fork with improvements" },
+  { name:"86Box",             url:"https://86box.net",                             cat:"Computer", emulates:"x86 IBM-compatible PCs (286–Pentium)", platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Very accurate vintage PC emu" },
+  { name:"VICE",              url:"https://vice-emu.sourceforge.io",              cat:"Computer", emulates:"Commodore 64, 128, VIC-20, PET, more", platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Gold standard C64 emulator" },
+  { name:"WinUAE",            url:"https://www.winuae.net",                        cat:"Computer", emulates:"Commodore Amiga",                      platforms:["Windows"],                          license:"Open Source", notes:"Definitive Amiga emulator" },
+  { name:"FS-UAE",            url:"https://fs-uae.net",                            cat:"Computer", emulates:"Commodore Amiga",                      platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Cross-platform, based on WinUAE" },
+  { name:"OpenMSX",           url:"https://openmsx.org",                           cat:"Computer", emulates:"MSX / MSX2 / MSX2+ / TurboR",         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Cycle-accurate MSX emulation" },
+  { name:"Fuse",              url:"http://fuse-emulator.sourceforge.net",         cat:"Computer", emulates:"ZX Spectrum",                          platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Full Spectrum model range" },
+  { name:"Hatari",            url:"https://hatari.tuxfamily.org",                 cat:"Computer", emulates:"Atari ST / STE / TT / Falcon",         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Active Atari ST emulator" },
+  { name:"Altirra",           url:"https://www.virtualdub.org/altirra.html",      cat:"Computer", emulates:"Atari 8-bit (400/800/XL/XE)",          platforms:["Windows"],                          license:"Open Source", notes:"Extremely accurate, debugger" },
+  { name:"AppleWin",          url:"https://github.com/AppleWin/AppleWin",         cat:"Computer", emulates:"Apple II series",                      platforms:["Windows"],                          license:"Open Source", notes:"Feature-rich Apple II emu" },
+  { name:"BasiliskII",        url:"https://basilisk.cebix.net",                   cat:"Computer", emulates:"68k Apple Macintosh",                  platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Mac Plus through Quadra era" },
+  { name:"SheepShaver",       url:"https://sheepshaver.cebix.net",                cat:"Computer", emulates:"PowerPC Apple Macintosh",              platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Mac OS 7.5–9.0.4" },
+  { name:"Mini vMac",         url:"https://www.gryphel.com/c/minivmac",           cat:"Computer", emulates:"Early Macintosh (128K, 512K, Plus)",   platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Small footprint, accurate" },
+  { name:"Stella",            url:"https://stella-emu.github.io",                 cat:"Console",  emulates:"Atari 2600",                           platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Definitive 2600 emulator" },
+  { name:"Caprice32",         url:"https://github.com/ColinPitrat/caprice32",     cat:"Computer", emulates:"Amstrad CPC",                          platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Good Amstrad emulator" },
+  { name:"BeebEm",            url:"https://www.mkw.me.uk/beebem",                 cat:"Computer", emulates:"BBC Micro / Master 128",               platforms:["Windows","macOS"],                  license:"Open Source", notes:"BBC Micro emulator" },
+  { name:"VirtualBox",        url:"https://www.virtualbox.org",                   cat:"VM",       emulates:"x86/x64 hardware",                    platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Free, cross-platform hypervisor" },
+  { name:"QEMU",              url:"https://www.qemu.org",                         cat:"VM",       emulates:"x86, ARM, MIPS, RISC-V, many more",    platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Full system + user-mode emu" },
+  { name:"VMware Workstation", url:"https://www.vmware.com/products/workstation-pro.html", cat:"VM", emulates:"x86/x64 hardware",               platforms:["Windows","Linux"],                  license:"Proprietary", notes:"Enterprise-grade virtualization" },
+  { name:"Parallels Desktop", url:"https://www.parallels.com",                   cat:"VM",       emulates:"x86/ARM hardware for macOS",           platforms:["macOS"],                            license:"Proprietary", notes:"Best Windows-on-Mac performance" },
+  { name:"UTM",               url:"https://mac.getutm.app",                       cat:"VM",       emulates:"x86, ARM, RISC-V via QEMU",            platforms:["macOS","iOS"],                      license:"Open Source", notes:"QEMU frontend for Apple silicon" },
+  { name:"Bochs",             url:"https://bochs.sourceforge.io",                 cat:"VM",       emulates:"x86/x64 IBM-compatible PC",            platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Fully software-based, accurate" },
+  { name:"WINE",              url:"https://www.winehq.org",                       cat:"VM",       emulates:"Windows API on POSIX systems",         platforms:["Linux","macOS","FreeBSD"],          license:"Open Source", notes:"Compatibility layer, not a true VM" },
+  { name:"Crossover",         url:"https://www.codeweavers.com/crossover",        cat:"VM",       emulates:"Windows software on Mac/Linux",        platforms:["macOS","Linux"],                    license:"Proprietary", notes:"Commercial WINE wrapper" },
+  { name:"Box64",             url:"https://github.com/ptitSeb/box64",             cat:"VM",       emulates:"x86-64 Linux on ARM64",               platforms:["Linux (ARM)"],                      license:"Open Source", notes:"Used on Raspberry Pi etc." },
+  { name:"Box86",             url:"https://github.com/ptitSeb/box86",             cat:"VM",       emulates:"x86 Linux on ARM32",                  platforms:["Linux (ARM)"],                      license:"Open Source", notes:"Companion to Box64" },
+  { name:"Winlator",          url:"https://winlator.org",                         cat:"VM",       emulates:"Windows x86 apps on Android",         platforms:["Android"],                          license:"Open Source", notes:"Box64+Wine on Android" },
+  { name:"Android Emulator",  url:"https://developer.android.com/studio/run/emulator", cat:"VM", emulates:"Android devices (ARM/x86)",           platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Part of Android Studio/SDK" },
+  { name:"BlueStacks",        url:"https://www.bluestacks.com",                   cat:"VM",       emulates:"Android on desktop",                  platforms:["Windows","macOS"],                  license:"Free",        notes:"Gaming-focused Android emu" },
+  { name:"LDPlayer",          url:"https://www.ldplayer.net",                     cat:"VM",       emulates:"Android",                             platforms:["Windows"],                          license:"Free",        notes:"Popular for mobile gaming" },
+  { name:"Genymotion",        url:"https://www.genymotion.com",                   cat:"VM",       emulates:"Android devices",                     platforms:["Windows","Linux","macOS","Cloud"],  license:"Proprietary", notes:"Dev/testing focused" },
+  { name:"Delta",             url:"https://deltaemulator.com",                    cat:"Multi",    emulates:"NES, SNES, N64, GBA, DS, Genesis",    platforms:["iOS"],                              license:"Open Source", notes:"Popular iOS multi-system emu" },
+  { name:"Provenance",        url:"https://provenance-emu.com",                   cat:"Multi",    emulates:"Many systems on iOS/tvOS",             platforms:["iOS","tvOS"],                       license:"Open Source", notes:"Open source iOS emulator" },
+  { name:"Lemuroid",          url:"https://github.com/Swordfish90/Lemuroid",      cat:"Multi",    emulates:"Many libretro cores on Android",       platforms:["Android"],                          license:"Open Source", notes:"Android libretro frontend" },
+  { name:"EmulationStation",  url:"https://emulationstation.org",                 cat:"Multi",    emulates:"Frontend for many emulators",          platforms:["Windows","Linux","macOS","RasPi"],  license:"Open Source", notes:"Used in RetroPie / Batocera" },
+  { name:"RetroPie",          url:"https://retropie.org.uk",                      cat:"Multi",    emulates:"Many systems on Raspberry Pi",         platforms:["Raspberry Pi","Linux"],             license:"Open Source", notes:"Raspberry Pi retrogaming OS" },
+  { name:"Batocera",          url:"https://batocera.org",                         cat:"Multi",    emulates:"Many systems, bootable OS",            platforms:["Windows","Linux","RasPi","x86"],    license:"Open Source", notes:"Standalone retrogaming OS" },
+  { name:"Recalbox",          url:"https://www.recalbox.com",                     cat:"Multi",    emulates:"Many systems on Pi/x86",               platforms:["Raspberry Pi","x86"],               license:"Open Source", notes:"Easier setup than RetroPie" },
+  { name:"LaunchBox",         url:"https://www.launchbox-app.com",                cat:"Multi",    emulates:"Frontend for many emulators",          platforms:["Windows"],                          license:"Free",        notes:"Paid BigBox mode for TV use" },
+  { name:"PCSX-Redux",        url:"https://github.com/grumpycoders/pcsx-redux",  cat:"Console",  emulates:"Sony PlayStation 1",                   platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Modern rewrite, debugger focus" },
+  { name:"AetherSX2",         url:"https://www.aethersx2.com",                    cat:"Console",  emulates:"PlayStation 2 on Android",             platforms:["Android"],                          license:"Free",        notes:"Development halted 2023" },
+  { name:"Drastic",           url:"https://play.google.com/store/apps/details?id=com.dsemu.drastic", cat:"Handheld", emulates:"Nintendo DS on Android", platforms:["Android"],           license:"Proprietary", notes:"Paid, widely used DS emu" },
+  { name:"PPSSPP (Android)",  url:"https://www.ppsspp.org",                       cat:"Handheld", emulates:"Sony PSP on Android",                  platforms:["Android"],                          license:"Open Source", notes:"Same core, great mobile port" },
+  { name:"EKA2L1",            url:"https://github.com/EKA2L1/EKA2L1",            cat:"Other",    emulates:"Symbian OS (Nokia phones)",            platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Nokia S60/S40 emulation" },
+  { name:"J2ME Loader",       url:"https://github.com/nikita36078/J2ME-Loader",  cat:"Other",    emulates:"Java ME (old mobile games)",           platforms:["Android"],                          license:"Open Source", notes:"Run old Nokia/Sony games" },
+  { name:"SkyEmu",            url:"https://github.com/skylersaleh/SkyEmu",       cat:"Multi",    emulates:"GBA, DS, GB, GameCube",                platforms:["Windows","Linux","macOS","Android","Web"], license:"Open Source", notes:"New multi-system emulator" },
+  { name:"Demul",             url:"http://demul.emulation64.com",                 cat:"Arcade",   emulates:"Sega Dreamcast / NAOMI / Atomiswave",  platforms:["Windows"],                          license:"Free",        notes:"NAOMI/Atomiswave arcade support" },
+  { name:"EmulatorJS",        url:"https://emulatorjs.org",                       cat:"Multi",    emulates:"NES, SNES, GBA, N64, PS1, more",       platforms:["Web"],                              license:"Open Source", notes:"Browser-based, embeddable" },
+  { name:"PCem",              url:"https://pcem-emulator.co.uk",                  cat:"Computer", emulates:"IBM PC XT/AT and compatibles",         platforms:["Windows","Linux"],                  license:"Open Source", notes:"Predecessor to 86Box" },
+];
+
+const catClass = { Console:'console', Handheld:'handheld', Arcade:'arcade', Computer:'computer', VM:'vm', Multi:'multi', Other:'other' };
+const licClass  = { 'Open Source':'oss', 'Proprietary':'prop', 'Free':'free' };
+let sortKey = 'name', sortDir = 1;
+
+function sort(k) {
+  if (sortKey === k) sortDir *= -1; else { sortKey = k; sortDir = 1; }
+  ['name','cat','license'].forEach(x => {
+    const el = document.getElementById('arr-'+x);
+    if (el) el.textContent = x === k ? (sortDir===1 ? '↑' : '↓') : '↕';
+  });
+  render();
+}
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const cat = document.getElementById('catFilter').value;
+  const lic = document.getElementById('licFilter').value;
+  let rows = data.filter(r =>
+    (!q || r.name.toLowerCase().includes(q) || r.emulates.toLowerCase().includes(q) || r.notes.toLowerCase().includes(q)) &&
+    (!cat || r.cat === cat) &&
+    (!lic || r.license === lic)
+  );
+  rows.sort((a,b) => {
+    const av = a[sortKey]||'', bv = b[sortKey]||'';
+    return typeof av === 'string' ? av.localeCompare(bv)*sortDir : (av-bv)*sortDir;
+  });
+  document.getElementById('count').textContent = `Showing ${rows.length} of ${data.length} entries`;
+  document.getElementById('tbody').innerHTML = rows.map(r => `
+    <tr>
+      <td class="name"><a href="${r.url}" target="_blank" rel="noopener">${r.name}</a></td>
+      <td><span class="badge badge-${catClass[r.cat]||'other'}">${r.cat}</span></td>
+      <td style="color:var(--color-text-primary)">${r.emulates}</td>
+      <td><div class="platforms">${r.platforms.map(p=>`<span class="badge badge-other">${p}</span>`).join('')}</div></td>
+      <td><span class="${licClass[r.license]||'free'}">${r.license}</span></td>
+      <td style="color:var(--color-text-secondary);font-size:12px">${r.notes}</td>
+    </tr>
+  `).join('');
+}
+
+render();
+</script>

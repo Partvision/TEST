@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emulators & VMs — Directory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c10;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: #2a2a38;
+    --text: #e8e8f0;
+    --muted: #6b6b84;
+    --accent: #7c6aff;
+    --accent2: #ff6a8a;
+    --success: #3dd68c;
+    --warning: #ffb347;
+    --danger: #ff6b6b;
+    --info: #63b3ff;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+  [data-theme="light"] {
+    --bg: #f4f3f8;
+    --surface: #ffffff;
+    --surface2: #ededf5;
+    --border: #d0cfe0;
+    --text: #1a1a2e;
+    --muted: #8484a8;
+    --accent: #5b47ff;
+    --accent2: #e8356a;
+    --success: #1a9e5f;
+    --warning: #c47c00;
+    --danger: #d63030;
+    --info: #1a6abf;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    min-height: 100vh;
+    line-height: 1.6;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.4px;
+  }
+  .logo-text span { color: var(--accent); }
+  .header-actions { display: flex; align-items: center; gap: 10px; }
+  .theme-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 7px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .stat-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .stat-pill b { color: var(--accent); font-size: 13px; }
+
+  /* HERO */
+  .hero {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 2rem 2rem;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 0.6rem;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  .hero p {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 500px;
+    font-weight: 400;
+  }
+
+  /* CONTROLS */
+  .controls-bar {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 220px;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  input[type="search"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 14px;
+    padding: 10px 14px 10px 38px;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+  input[type="search"]:focus { border-color: var(--accent); }
+  input[type="search"]::placeholder { color: var(--muted); }
+  select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    min-width: 160px;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b84' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 34px;
+  }
+  select:focus { border-color: var(--accent); }
+
+  /* CATEGORY PILLS */
+  .cat-pills {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cat-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--font-display);
+    letter-spacing: 0.3px;
+  }
+  .cat-pill:hover { border-color: var(--accent); color: var(--accent); }
+  .cat-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .cat-pill[data-cat="Console"].active   { background: #3C3489; border-color: #3C3489; }
+  .cat-pill[data-cat="Arcade"].active    { background: #712B13; border-color: #712B13; }
+  .cat-pill[data-cat="Computer"].active  { background: #085041; border-color: #085041; }
+  .cat-pill[data-cat="VM"].active        { background: #0C447C; border-color: #0C447C; }
+  .cat-pill[data-cat="Handheld"].active  { background: #72243E; border-color: #72243E; }
+  .cat-pill[data-cat="Multi"].active     { background: #633806; border-color: #633806; }
+  .cat-pill[data-cat="Other"].active     { background: #444441; border-color: #444441; }
+
+  /* MAIN TABLE */
+  .table-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+  .result-info {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-info b { color: var(--text); font-size: 13px; }
+  .table-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+  }
+  thead {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s;
+    border-right: 1px solid var(--border);
+  }
+  th:last-child { border-right: none; }
+  th:hover { color: var(--text); }
+  th .arr { color: var(--accent); margin-left: 4px; font-size: 10px; }
+  td {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    border-right: 1px solid var(--border);
+    color: var(--text);
+    transition: background 0.1s;
+  }
+  td:last-child { border-right: none; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--surface2); }
+
+  /* Name cell */
+  .name-cell a {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--info);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s;
+  }
+  .name-cell a:hover { color: var(--accent); }
+  .ext-icon { opacity: 0.4; flex-shrink: 0; }
+  .name-cell a:hover .ext-icon { opacity: 0.8; }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    padding: 3px 9px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge-console  { background:#26215C; color:#b0acf0; }
+  .badge-arcade   { background:#4A1B0C; color:#f5b3a0; }
+  .badge-computer { background:#04342C; color:#7fd4be; }
+  .badge-vm       { background:#042C53; color:#9dc9f2; }
+  .badge-handheld { background:#4B1528; color:#f4b5cc; }
+  .badge-multi    { background:#412402; color:#f5c97a; }
+  .badge-other    { background:#2C2C2A; color:#c0bead; }
+  [data-theme="light"] .badge-console  { background:#EEEDFE; color:#3C3489; }
+  [data-theme="light"] .badge-arcade   { background:#FAECE7; color:#712B13; }
+  [data-theme="light"] .badge-computer { background:#E1F5EE; color:#085041; }
+  [data-theme="light"] .badge-vm       { background:#E6F1FB; color:#0C447C; }
+  [data-theme="light"] .badge-handheld { background:#FBEAF0; color:#72243E; }
+  [data-theme="light"] .badge-multi    { background:#FAEEDA; color:#633806; }
+  [data-theme="light"] .badge-other    { background:#F1EFE8; color:#444441; }
+
+  /* License */
+  .lic {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+  .lic-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .lic-oss  .lic-dot { background: var(--success); }
+  .lic-prop .lic-dot { background: var(--danger); }
+  .lic-free .lic-dot { background: var(--warning); }
+  .lic-oss  { color: var(--success); }
+  .lic-prop { color: var(--danger); }
+  .lic-free { color: var(--warning); }
+
+  /* Platform pills */
+  .platforms { display: flex; flex-wrap: wrap; gap: 4px; }
+  .plat {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  [data-theme="light"] .plat {
+    background: var(--bg);
+  }
+
+  /* Notes */
+  .notes-cell {
+    font-size: 12px;
+    color: var(--muted);
+    max-width: 240px;
+    line-height: 1.4;
+  }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+  .empty span { display: block; font-size: 3rem; margin-bottom: 1rem; }
+
+  /* Highlight */
+  mark {
+    background: var(--accent);
+    color: #fff;
+    padding: 0 2px;
+    border-radius: 3px;
+    font-style: normal;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .header-inner { padding: 0 1rem; }
+    .hero, .controls-bar, .cat-pills, .table-wrap { padding-left: 1rem; padding-right: 1rem; }
+    .stat-pill { display: none; }
+    .hero h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="#">
+      <div class="logo-icon">🕹️</div>
+      <span class="logo-text">Emulators<span>&VMs</span></span>
+    </a>
+    <div class="header-actions">
+      <div class="stat-pill"><b id="totalCount">—</b> entries</div>
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">
+        <span id="themeIcon">☀️</span> <span id="themeLabel">Light</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Emulators &amp; <em>Virtual Machines</em></h1>
+    <p>A curated reference of popular emulator projects — consoles, handhelds, arcades, computers, and VMs. Search, filter, sort.</p>
+  </div>
+
+  <div class="controls-bar">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="11" cy="11" r="5" stroke="currentColor" stroke-width="1.5"/></svg>
+      <input type="search" id="search" placeholder="Search emulators, systems, notes…" oninput="render()">
+    </div>
+    <select id="licFilter" onchange="render()">
+      <option value="">All licenses</option>
+      <option value="Open Source">Open Source</option>
+      <option value="Proprietary">Proprietary</option>
+      <option value="Free">Free / Freeware</option>
+    </select>
+  </div>
+
+  <div class="cat-pills" id="catPills">
+    <button class="cat-pill active" data-cat="" onclick="setCat(this,'')">All</button>
+    <button class="cat-pill" data-cat="Console" onclick="setCat(this,'Console')">Console</button>
+    <button class="cat-pill" data-cat="Handheld" onclick="setCat(this,'Handheld')">Handheld</button>
+    <button class="cat-pill" data-cat="Arcade" onclick="setCat(this,'Arcade')">Arcade</button>
+    <button class="cat-pill" data-cat="Computer" onclick="setCat(this,'Computer')">Computer</button>
+    <button class="cat-pill" data-cat="VM" onclick="setCat(this,'VM')">Virtual Machine</button>
+    <button class="cat-pill" data-cat="Multi" onclick="setCat(this,'Multi')">Multi-system</button>
+    <button class="cat-pill" data-cat="Other" onclick="setCat(this,'Other')">Other</button>
+  </div>
+
+  <div class="table-wrap">
+    <div class="result-info">
+      Showing <b id="showCount">—</b> of <b id="ofCount">—</b> entries
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sort('name')">Name <span class="arr" id="arr-name">↕</span></th>
+            <th onclick="sort('cat')">Category <span class="arr" id="arr-cat">↕</span></th>
+            <th>Emulates</th>
+            <th>Platforms</th>
+            <th onclick="sort('license')">License <span class="arr" id="arr-license">↕</span></th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Emulators &amp; VMs Directory — for educational and preservation purposes.
+</footer>
+
+<script>
+const data = [
+  { name:"RPCS3",             url:"https://rpcs3.net",                               cat:"Console",  emulates:"Sony PlayStation 3",                   platforms:["Windows","Linux"],                  license:"Open Source", notes:"Active development, many games playable" },
+  { name:"PCSX2",             url:"https://pcsx2.net",                               cat:"Console",  emulates:"Sony PlayStation 2",                   platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Mature, wide compatibility" },
+  { name:"DuckStation",       url:"https://www.duckstation.org",                     cat:"Console",  emulates:"Sony PlayStation 1",                   platforms:["Windows","Linux","macOS","Android"],license:"Open Source", notes:"Fast, accurate, replaces ePSXe" },
+  { name:"PPSSPP",            url:"https://www.ppsspp.org",                          cat:"Handheld", emulates:"Sony PSP",                             platforms:["Windows","Linux","macOS","Android","iOS"], license:"Open Source", notes:"Excellent compatibility, runs on phones" },
+  { name:"Vita3K",            url:"https://vita3k.org",                              cat:"Handheld", emulates:"Sony PS Vita",                         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Early stage, improving rapidly" },
+  { name:"Ryujinx",           url:"https://github.com/Ryujinx/Ryujinx",             cat:"Console",  emulates:"Nintendo Switch",                      platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Ceased development 2024, archived" },
+  { name:"yuzu",              url:"https://github.com/yuzu-emu/yuzu",               cat:"Console",  emulates:"Nintendo Switch",                      platforms:["Windows","Linux"],                  license:"Open Source", notes:"Shut down Mar 2024 via legal action" },
+  { name:"Sudachi",           url:"https://github.com/sudachi-emu/sudachi",         cat:"Console",  emulates:"Nintendo Switch",                      platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Yuzu fork post-shutdown" },
+  { name:"Citron",            url:"https://git.citron-emu.org/Citron/Citron",       cat:"Console",  emulates:"Nintendo Switch",                      platforms:["Windows","Linux"],                  license:"Open Source", notes:"Active yuzu fork" },
+  { name:"Strato",            url:"https://github.com/strato-emu/strato",           cat:"Console",  emulates:"Nintendo Switch",                      platforms:["Android"],                          license:"Open Source", notes:"Switch emu for Android" },
+  { name:"Citra",             url:"https://github.com/citra-emu/citra",             cat:"Handheld", emulates:"Nintendo 3DS",                         platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Shut down 2024, forks remain active" },
+  { name:"Lime3DS",           url:"https://github.com/Lime3DS/Lime3DS",             cat:"Handheld", emulates:"Nintendo 3DS",                         platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Citra fork post-shutdown" },
+  { name:"Panda3DS",          url:"https://panda3ds.com",                           cat:"Handheld", emulates:"Nintendo 3DS",                         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Newer 3DS emulator" },
+  { name:"melonDS",           url:"https://melonds.kuribo64.net",                   cat:"Handheld", emulates:"Nintendo DS / DSi",                    platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"High accuracy, Wi-Fi support" },
+  { name:"DeSmuME",           url:"https://desmume.org",                            cat:"Handheld", emulates:"Nintendo DS",                          platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Older but widely used" },
+  { name:"NooDS",             url:"https://github.com/Hydr8gon/NooDS",             cat:"Handheld", emulates:"Nintendo DS",                          platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Newer open source DS emu" },
+  { name:"mGBA",              url:"https://mgba.io",                                cat:"Handheld", emulates:"Game Boy / GBC / GBA",                 platforms:["Windows","Linux","macOS","Switch"],  license:"Open Source", notes:"Best GBA emulator available" },
+  { name:"SameBoy",           url:"https://sameboy.github.io",                      cat:"Handheld", emulates:"Game Boy / Game Boy Color",            platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Very accurate, pretty UI" },
+  { name:"Gambatte",          url:"https://github.com/sinamas/gambatte",            cat:"Handheld", emulates:"Game Boy / Game Boy Color",            platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Cycle-accurate, used in TASing" },
+  { name:"BGB",               url:"https://bgb.bircd.org",                          cat:"Handheld", emulates:"Game Boy / GBC",                       platforms:["Windows"],                          license:"Free",        notes:"Excellent debugger" },
+  { name:"Dolphin",           url:"https://dolphin-emu.org",                        cat:"Console",  emulates:"Nintendo GameCube / Wii",              platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Mature, great Wii motion support" },
+  { name:"Cemu",              url:"https://cemu.info",                              cat:"Console",  emulates:"Nintendo Wii U",                       platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Near-perfect BotW compatibility" },
+  { name:"ares",              url:"https://ares-emu.net",                           cat:"Multi",    emulates:"SNES, N64, PS1, Saturn, GBA, more",    platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"byuu's successor to higan" },
+  { name:"bsnes",             url:"https://github.com/bsnes-emu/bsnes",            cat:"Console",  emulates:"Super Nintendo (SNES)",                platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Cycle-accurate SNES emulation" },
+  { name:"Snes9x",            url:"https://www.snes9x.com",                         cat:"Console",  emulates:"Super Nintendo (SNES)",                platforms:["Windows","Linux","macOS","Android"], license:"Free",        notes:"Lightweight, wide compat" },
+  { name:"Nestopia UE",       url:"https://github.com/0ldsk00l/nestopia",           cat:"Console",  emulates:"Nintendo Entertainment System",        platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Very accurate NES emulator" },
+  { name:"FCEUX",             url:"https://fceux.com",                              cat:"Console",  emulates:"NES / Famicom",                        platforms:["Windows","Linux"],                  license:"Open Source", notes:"Popular for TASing & ROM hacking" },
+  { name:"Mesen",             url:"https://www.mesen.ca",                           cat:"Multi",    emulates:"NES, SNES, GB, GBA, PC Engine",        platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Extremely accurate, great debugger" },
+  { name:"Mupen64Plus",       url:"https://mupen64plus.org",                        cat:"Console",  emulates:"Nintendo 64",                          platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Core used by many frontends" },
+  { name:"Simple64",          url:"https://simple64.github.io",                     cat:"Console",  emulates:"Nintendo 64",                          platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Mupen64Plus-Next based, easy setup" },
+  { name:"Project64",         url:"https://www.pj64-emu.com",                       cat:"Console",  emulates:"Nintendo 64",                          platforms:["Windows"],                          license:"Free",        notes:"Long-standing Windows N64 emu" },
+  { name:"CEN64",             url:"https://github.com/n64dev/cen64",               cat:"Console",  emulates:"Nintendo 64 (cycle accurate)",         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Very accurate, very slow" },
+  { name:"RetroArch",         url:"https://www.retroarch.com",                      cat:"Multi",    emulates:"Hundreds of systems via cores",        platforms:["Windows","Linux","macOS","Android","iOS","Switch","PS3"], license:"Open Source", notes:"Frontend for libretro cores" },
+  { name:"OpenEmu",           url:"https://openemu.org",                            cat:"Multi",    emulates:"Dozens of systems via cores",          platforms:["macOS"],                            license:"Open Source", notes:"Beautiful macOS-native frontend" },
+  { name:"MAME",              url:"https://www.mamedev.org",                        cat:"Arcade",   emulates:"Thousands of arcade boards",           platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Most comprehensive arcade emu" },
+  { name:"FinalBurn Neo",     url:"https://github.com/finalburnneo/FBNeo",          cat:"Arcade",   emulates:"CPS1/2/3, Neo Geo, Taito, more",       platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Focused on playability vs MAME" },
+  { name:"Flycast",           url:"https://github.com/flyinghead/flycast",          cat:"Console",  emulates:"Sega Dreamcast / NAOMI",               platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Active, great Dreamcast emu" },
+  { name:"Redream",           url:"https://redream.io",                             cat:"Console",  emulates:"Sega Dreamcast",                       platforms:["Windows","Linux","macOS","Android"], license:"Free",        notes:"Paid premium tier for HD" },
+  { name:"Kronos",            url:"https://github.com/FCare/Kronos",               cat:"Console",  emulates:"Sega Saturn",                          platforms:["Windows","Linux"],                  license:"Open Source", notes:"Fork of Yabause with fixes" },
+  { name:"Genesis Plus GX",  url:"https://github.com/ekeeke/Genesis-Plus-GX",     cat:"Console",  emulates:"Sega Genesis / Mega Drive / CD / 32X", platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Widely used as libretro core" },
+  { name:"BlastEm",           url:"https://www.retrodev.com/blastem",              cat:"Console",  emulates:"Sega Genesis / Mega Drive",            platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Cycle-accurate, debugger support" },
+  { name:"Kega Fusion",       url:"https://www.carpeludum.com/kega-fusion",        cat:"Console",  emulates:"Sega SG-1000, SMS, Genesis, CD, 32X",  platforms:["Windows","Linux","macOS"],          license:"Free",        notes:"Covers wide Sega range" },
+  { name:"Cxbx-Reloaded",     url:"https://cxbx-reloaded.co.uk",                  cat:"Console",  emulates:"Microsoft Xbox (original)",            platforms:["Windows"],                          license:"Open Source", notes:"Actively developed" },
+  { name:"xenia",             url:"https://xenia.jp",                              cat:"Console",  emulates:"Microsoft Xbox 360",                   platforms:["Windows"],                          license:"Open Source", notes:"Many titles boot/playable" },
+  { name:"xemu",              url:"https://xemu.app",                              cat:"Console",  emulates:"Microsoft Xbox (original)",            platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Based on QEMU, fast progress" },
+  { name:"Mednafen",          url:"https://mednafen.github.io",                    cat:"Multi",    emulates:"NES, SNES, PS1, PCE, GB, GBA, more",  platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"CLI-based, highly accurate" },
+  { name:"ScummVM",           url:"https://www.scummvm.org",                       cat:"Other",    emulates:"Point-and-click adventure engines",    platforms:["Windows","Linux","macOS","Android","iOS","Switch"], license:"Open Source", notes:"LucasArts, Sierra, Humongous, more" },
+  { name:"Ruffle",            url:"https://ruffle.rs",                             cat:"Other",    emulates:"Adobe Flash Player",                   platforms:["Web","Windows","Linux","macOS"],    license:"Open Source", notes:"Flash preservation project" },
+  { name:"DOSBox",            url:"https://www.dosbox.com",                        cat:"Computer", emulates:"IBM PC / DOS environment",             platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Classic DOS gaming standard" },
+  { name:"DOSBox-X",          url:"https://dosbox-x.com",                          cat:"Computer", emulates:"IBM PC / DOS / PCjr / Tandy",          platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Extended DOSBox with more hardware" },
+  { name:"DOSBox Staging",    url:"https://dosbox-staging.github.io",             cat:"Computer", emulates:"IBM PC / DOS",                         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Modern fork with improvements" },
+  { name:"86Box",             url:"https://86box.net",                             cat:"Computer", emulates:"x86 IBM-compatible PCs (286–Pentium)", platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Very accurate vintage PC emu" },
+  { name:"VICE",              url:"https://vice-emu.sourceforge.io",              cat:"Computer", emulates:"Commodore 64, 128, VIC-20, PET, more", platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Gold standard C64 emulator" },
+  { name:"WinUAE",            url:"https://www.winuae.net",                        cat:"Computer", emulates:"Commodore Amiga",                      platforms:["Windows"],                          license:"Open Source", notes:"Definitive Amiga emulator" },
+  { name:"FS-UAE",            url:"https://fs-uae.net",                            cat:"Computer", emulates:"Commodore Amiga",                      platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Cross-platform, based on WinUAE" },
+  { name:"OpenMSX",           url:"https://openmsx.org",                           cat:"Computer", emulates:"MSX / MSX2 / MSX2+ / TurboR",         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Cycle-accurate MSX emulation" },
+  { name:"Fuse",              url:"http://fuse-emulator.sourceforge.net",         cat:"Computer", emulates:"ZX Spectrum",                          platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Full Spectrum model range" },
+  { name:"Hatari",            url:"https://hatari.tuxfamily.org",                 cat:"Computer", emulates:"Atari ST / STE / TT / Falcon",         platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Active Atari ST emulator" },
+  { name:"Altirra",           url:"https://www.virtualdub.org/altirra.html",      cat:"Computer", emulates:"Atari 8-bit (400/800/XL/XE)",          platforms:["Windows"],                          license:"Open Source", notes:"Extremely accurate, debugger" },
+  { name:"AppleWin",          url:"https://github.com/AppleWin/AppleWin",         cat:"Computer", emulates:"Apple II series",                      platforms:["Windows"],                          license:"Open Source", notes:"Feature-rich Apple II emu" },
+  { name:"BasiliskII",        url:"https://basilisk.cebix.net",                   cat:"Computer", emulates:"68k Apple Macintosh",                  platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Mac Plus through Quadra era" },
+  { name:"SheepShaver",       url:"https://sheepshaver.cebix.net",                cat:"Computer", emulates:"PowerPC Apple Macintosh",              platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Mac OS 7.5–9.0.4" },
+  { name:"Mini vMac",         url:"https://www.gryphel.com/c/minivmac",           cat:"Computer", emulates:"Early Macintosh (128K, 512K, Plus)",   platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Small footprint, accurate" },
+  { name:"Stella",            url:"https://stella-emu.github.io",                 cat:"Console",  emulates:"Atari 2600",                           platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Definitive 2600 emulator" },
+  { name:"Caprice32",         url:"https://github.com/ColinPitrat/caprice32",     cat:"Computer", emulates:"Amstrad CPC",                          platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Good Amstrad emulator" },
+  { name:"BeebEm",            url:"https://www.mkw.me.uk/beebem",                 cat:"Computer", emulates:"BBC Micro / Master 128",               platforms:["Windows","macOS"],                  license:"Open Source", notes:"BBC Micro emulator" },
+  { name:"VirtualBox",        url:"https://www.virtualbox.org",                   cat:"VM",       emulates:"x86/x64 hardware",                    platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Free, cross-platform hypervisor" },
+  { name:"QEMU",              url:"https://www.qemu.org",                         cat:"VM",       emulates:"x86, ARM, MIPS, RISC-V, many more",    platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Full system + user-mode emu" },
+  { name:"VMware Workstation", url:"https://www.vmware.com/products/workstation-pro.html", cat:"VM", emulates:"x86/x64 hardware",               platforms:["Windows","Linux"],                  license:"Proprietary", notes:"Enterprise-grade virtualization" },
+  { name:"Parallels Desktop", url:"https://www.parallels.com",                   cat:"VM",       emulates:"x86/ARM hardware for macOS",           platforms:["macOS"],                            license:"Proprietary", notes:"Best Windows-on-Mac performance" },
+  { name:"UTM",               url:"https://mac.getutm.app",                       cat:"VM",       emulates:"x86, ARM, RISC-V via QEMU",            platforms:["macOS","iOS"],                      license:"Open Source", notes:"QEMU frontend for Apple silicon" },
+  { name:"Bochs",             url:"https://bochs.sourceforge.io",                 cat:"VM",       emulates:"x86/x64 IBM-compatible PC",            platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Fully software-based, accurate" },
+  { name:"WINE",              url:"https://www.winehq.org",                       cat:"VM",       emulates:"Windows API on POSIX systems",         platforms:["Linux","macOS","FreeBSD"],          license:"Open Source", notes:"Compatibility layer, not a true VM" },
+  { name:"Crossover",         url:"https://www.codeweavers.com/crossover",        cat:"VM",       emulates:"Windows software on Mac/Linux",        platforms:["macOS","Linux"],                    license:"Proprietary", notes:"Commercial WINE wrapper" },
+  { name:"Box64",             url:"https://github.com/ptitSeb/box64",             cat:"VM",       emulates:"x86-64 Linux on ARM64",               platforms:["Linux (ARM)"],                      license:"Open Source", notes:"Used on Raspberry Pi etc." },
+  { name:"Box86",             url:"https://github.com/ptitSeb/box86",             cat:"VM",       emulates:"x86 Linux on ARM32",                  platforms:["Linux (ARM)"],                      license:"Open Source", notes:"Companion to Box64" },
+  { name:"Winlator",          url:"https://winlator.org",                         cat:"VM",       emulates:"Windows x86 apps on Android",         platforms:["Android"],                          license:"Open Source", notes:"Box64+Wine on Android" },
+  { name:"Android Emulator",  url:"https://developer.android.com/studio/run/emulator", cat:"VM", emulates:"Android devices (ARM/x86)",           platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Part of Android Studio/SDK" },
+  { name:"BlueStacks",        url:"https://www.bluestacks.com",                   cat:"VM",       emulates:"Android on desktop",                  platforms:["Windows","macOS"],                  license:"Free",        notes:"Gaming-focused Android emu" },
+  { name:"LDPlayer",          url:"https://www.ldplayer.net",                     cat:"VM",       emulates:"Android",                             platforms:["Windows"],                          license:"Free",        notes:"Popular for mobile gaming" },
+  { name:"Genymotion",        url:"https://www.genymotion.com",                   cat:"VM",       emulates:"Android devices",                     platforms:["Windows","Linux","macOS","Cloud"],  license:"Proprietary", notes:"Dev/testing focused" },
+  { name:"Delta",             url:"https://deltaemulator.com",                    cat:"Multi",    emulates:"NES, SNES, N64, GBA, DS, Genesis",    platforms:["iOS"],                              license:"Open Source", notes:"Popular iOS multi-system emu" },
+  { name:"Provenance",        url:"https://provenance-emu.com",                   cat:"Multi",    emulates:"Many systems on iOS/tvOS",             platforms:["iOS","tvOS"],                       license:"Open Source", notes:"Open source iOS emulator" },
+  { name:"Lemuroid",          url:"https://github.com/Swordfish90/Lemuroid",      cat:"Multi",    emulates:"Many libretro cores on Android",       platforms:["Android"],                          license:"Open Source", notes:"Android libretro frontend" },
+  { name:"EmulationStation",  url:"https://emulationstation.org",                 cat:"Multi",    emulates:"Frontend for many emulators",          platforms:["Windows","Linux","macOS","RasPi"],  license:"Open Source", notes:"Used in RetroPie / Batocera" },
+  { name:"RetroPie",          url:"https://retropie.org.uk",                      cat:"Multi",    emulates:"Many systems on Raspberry Pi",         platforms:["Raspberry Pi","Linux"],             license:"Open Source", notes:"Raspberry Pi retrogaming OS" },
+  { name:"Batocera",          url:"https://batocera.org",                         cat:"Multi",    emulates:"Many systems, bootable OS",            platforms:["Windows","Linux","RasPi","x86"],    license:"Open Source", notes:"Standalone retrogaming OS" },
+  { name:"Recalbox",          url:"https://www.recalbox.com",                     cat:"Multi",    emulates:"Many systems on Pi/x86",               platforms:["Raspberry Pi","x86"],               license:"Open Source", notes:"Easier setup than RetroPie" },
+  { name:"LaunchBox",         url:"https://www.launchbox-app.com",                cat:"Multi",    emulates:"Frontend for many emulators",          platforms:["Windows"],                          license:"Free",        notes:"Paid BigBox mode for TV use" },
+  { name:"PCSX-Redux",        url:"https://github.com/grumpycoders/pcsx-redux",  cat:"Console",  emulates:"Sony PlayStation 1",                   platforms:["Windows","Linux","macOS"],          license:"Open Source", notes:"Modern rewrite, debugger focus" },
+  { name:"AetherSX2",         url:"https://www.aethersx2.com",                    cat:"Console",  emulates:"PlayStation 2 on Android",             platforms:["Android"],                          license:"Free",        notes:"Development halted 2023" },
+  { name:"Drastic",           url:"https://play.google.com/store/apps/details?id=com.dsemu.drastic", cat:"Handheld", emulates:"Nintendo DS on Android", platforms:["Android"],           license:"Proprietary", notes:"Paid, widely used DS emu" },
+  { name:"EKA2L1",            url:"https://github.com/EKA2L1/EKA2L1",            cat:"Other",    emulates:"Symbian OS (Nokia phones)",            platforms:["Windows","Linux","macOS","Android"], license:"Open Source", notes:"Nokia S60/S40 emulation" },
+  { name:"J2ME Loader",       url:"https://github.com/nikita36078/J2ME-Loader",  cat:"Other",    emulates:"Java ME (old mobile games)",           platforms:["Android"],                          license:"Open Source", notes:"Run old Nokia/Sony games" },
+  { name:"SkyEmu",            url:"https://github.com/skylersaleh/SkyEmu",       cat:"Multi",    emulates:"GBA, DS, GB, GameCube",                platforms:["Windows","Linux","macOS","Android","Web"], license:"Open Source", notes:"New multi-system emulator" },
+  { name:"Demul",             url:"http://demul.emulation64.com",                 cat:"Arcade",   emulates:"Sega Dreamcast / NAOMI / Atomiswave",  platforms:["Windows"],                          license:"Free",        notes:"NAOMI/Atomiswave arcade support" },
+  { name:"EmulatorJS",        url:"https://emulatorjs.org",                       cat:"Multi",    emulates:"NES, SNES, GBA, N64, PS1, more",       platforms:["Web"],                              license:"Open Source", notes:"Browser-based, embeddable" },
+  { name:"PCem",              url:"https://pcem-emulator.co.uk",                  cat:"Computer", emulates:"IBM PC XT/AT and compatibles",         platforms:["Windows","Linux"],                  license:"Open Source", notes:"Predecessor to 86Box" },
+];
+
+const catClass = { Console:'console', Handheld:'handheld', Arcade:'arcade', Computer:'computer', VM:'vm', Multi:'multi', Other:'other' };
+let sortKey = 'name', sortDir = 1, activeCat = '';
+
+document.getElementById('totalCount').textContent = data.length;
+document.getElementById('ofCount').textContent = data.length;
+
+function setCat(el, cat) {
+  activeCat = cat;
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function sort(k) {
+  if (sortKey === k) sortDir *= -1; else { sortKey = k; sortDir = 1; }
+  ['name','cat','license'].forEach(x => {
+    const el = document.getElementById('arr-'+x);
+    if (el) el.textContent = x===k ? (sortDir===1?'↑':'↓') : '↕';
+  });
+  render();
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[c]);
+}
+
+function hi(text, q) {
+  if (!q) return esc(text);
+  const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'ig');
+  return esc(text).replace(re, m=>`<mark>${m}</mark>`);
+}
+
+function licHtml(l) {
+  const map = { 'Open Source':['oss','OSS'], 'Proprietary':['prop','Proprietary'], 'Free':['free','Freeware'] };
+  const [cls, label] = map[l] || ['free', l];
+  return `<span class="lic lic-${cls}"><span class="lic-dot"></span>${label}</span>`;
+}
+
+function render() {
+  const q = document.getElementById('search').value.trim();
+  const ql = q.toLowerCase();
+  const lic = document.getElementById('licFilter').value;
+  let rows = data.filter(r =>
+    (!ql || r.name.toLowerCase().includes(ql) || r.emulates.toLowerCase().includes(ql) || r.notes.toLowerCase().includes(ql) || r.platforms.join(' ').toLowerCase().includes(ql)) &&
+    (!activeCat || r.cat === activeCat) &&
+    (!lic || r.license === lic)
+  );
+  rows.sort((a,b) => {
+    const av = a[sortKey]||'', bv = b[sortKey]||'';
+    return typeof av==='string' ? av.localeCompare(bv)*sortDir : (av-bv)*sortDir;
+  });
+  document.getElementById('showCount').textContent = rows.length;
+  document.getElementById('ofCount').textContent = data.length;
+  if (rows.length === 0) {
+    document.getElementById('tbody').innerHTML = `<tr><td colspan="6"><div class="empty"><span>🔍</span>No results found</div></td></tr>`;
+    return;
+  }
+  document.getElementById('tbody').innerHTML = rows.map(r => `
+    <tr>
+      <td class="name-cell">
+        <a href="${r.url}" target="_blank" rel="noopener">
+          ${hi(r.name,q)}
+          <svg class="ext-icon" width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H7M17 7v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </td>
+      <td><span class="badge badge-${catClass[r.cat]||'other'}">${r.cat}</span></td>
+      <td style="font-size:12px">${hi(r.emulates,q)}</td>
+      <td><div class="platforms">${r.platforms.map(p=>`<span class="plat">${p}</span>`).join('')}</div></td>
+      <td>${licHtml(r.license)}</td>
+      <td class="notes-cell">${hi(r.notes,q)}</td>
+    </tr>
+  `).join('');
+}
+
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('themeIcon').textContent = next==='dark' ? '☀️' : '🌙';
+  document.getElementById('themeLabel').textContent = next==='dark' ? 'Light' : 'Dark';
+}
+
+// Init theme
+const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+document.documentElement.setAttribute('data-theme', saved);
+document.getElementById('themeIcon').textContent = saved==='dark' ? '☀️' : '🌙';
+document.getElementById('themeLabel').textContent = saved==='dark' ? 'Light' : 'Dark';
+
+render();
+</script>
+</body>
+</html>
